@@ -1,0 +1,6 @@
+1. pisahin 3 modes: green, blue, greyscale
+2. entity only humas
+3. remove label and bbox
+
+
+#estimated tomorrow complete
