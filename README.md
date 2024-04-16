@@ -1,9 +1,9 @@
-# Entity Isolator | Image/Video Background Removal
+# Entity Isolator | Image/Video Background Modifier
 This project uses a pretrained MASK-RCNN model to do object detection. This project can be used to isolate the main human entity of an image/video and modify the background to be: 
-1.  grayscale | mode = 'gray'
-2. green screen | mode = 'green'
-3. blue screen | mode = 'blue'
-4. an external image as virtual background | mode = 'external' | vbg = path/to/virtual/background
+1.  grayscale | `mode = 'gray'`
+2. green screen | `mode = 'green'`
+3. blue screen | `mode = 'blue'`
+4. an external image as virtual background | `mode = 'external'` | `vbg = path/to/virtual/background`
 
 # Model Used
 1. Out of the box [pre-trained Mask-RCNN model](https://github.com/matterport/Mask_RCNN/releases/download/v2.0/mask_rcnn_coco.h5) trained on the COCO dataset.
