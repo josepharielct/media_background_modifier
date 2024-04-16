@@ -16,7 +16,7 @@ This project uses a pretrained MASK-RCNN model to do object detection. This proj
 ## Video (as gif)
 
 
-<img src="assets/sakana_short_original.gif" /><img src="assets/sakana_short_grey.gif" /><img src="assets/sakana_short_vbg.gif" /><img src="assets/sakana_short_blue.gif" /><img src="assets/sakana_short_green.gif" />
+<img src="assets/sakana_combined.gif" />
 
 
 
@@ -53,3 +53,6 @@ type this command in terminal/cmd/conda prompt: <br>
 `pip install -r requirements.txt`
 ## Run main.py
 
+
+# Attributions
+1. [Demo Video Source](https://www.youtube.com/shorts/HM9aWSg4D1E)
