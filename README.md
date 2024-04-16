@@ -36,7 +36,8 @@ This project uses a pretrained MASK-RCNN model to do object detection. This proj
 - IPython[all]
 <br>
 Note: <br>
-- Python 3.7
+
+- Use python 3.7
 
 # To-Do
 
