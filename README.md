@@ -42,6 +42,8 @@ This project uses a pretrained MASK-RCNN model to do object detection. This proj
 - [ ] Create proof-of-concept app
 - [ ] Enhance edge detection / edge handling
 - [ ] Enable support for webcam input (currently not implemented due to my hardware limitations)
+- [ ] Refactorize code for better structure and clarity
+- [ ] More robust exception handling
 
 # Usage
 
