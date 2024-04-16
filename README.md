@@ -34,6 +34,7 @@ This project uses a pretrained MASK-RCNN model to do object detection. This proj
 - h5py==2.10.0
 - imgaug
 - IPython[all]
+<br>
 - Python 3.7
 
 # To-Do
