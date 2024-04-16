@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import os
 import sys
-
+import mimetypes
 from mrcnn import utils
 from mrcnn import model as modellib
 
@@ -47,35 +47,46 @@ class_names = [
 ]
 
 
-def random_colors(N):
-    np.random.seed(1)
-    colors = [tuple(255 * np.random.rand(3)) for _ in range(N)]
-    return colors
+def background_options(option):
+    bg_options =  {'green' : [0,255,0],
+                   'blue' : [245,39,8]}
+    return bg_options[option]
 
+def create_background(image, option, vbg):
+    if option == 'gray':
+        gray_image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+        #bg_image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+        bg_image = np.zeros_like(image)
+        for i in range(3):
+            bg_image[:,:,i] = gray_image
+    elif option == 'external':
+        if vbg is None:
+            print('no virtual background detected')
+            sys.exit()   
+        bg_image = cv2.resize(vbg,(image.shape[1], image.shape[0]))
+    elif option == 'blue' or option =='green':
+        bg_image = np.zeros_like(image)
+        bg_image[:] = background_options(option)  
+    else:
+        print('Unidentified Mode. Please choose between blue, green, external, or gray')
+    return bg_image    
 
-colors = random_colors(len(class_names))
-class_dict = {
-    name: color for name, color in zip(class_names, colors)
-}
-
-
-def apply_mask(image, mask, color, alpha=0.5):
-    """apply mask to image"""
-    for n, c in enumerate(color):
-        image[:, :, n] = np.where(
-            mask == 1,
-            image[:, :, n] * (1 - alpha) + alpha * c,
-            image[:, :, n]
+def apply_mask(image, mask,background,vbg):
+    bg_image = create_background(image, background,vbg)
+    for i in range(3):
+        image[:, :, i] = np.where(
+            mask == 0,
+            bg_image[:, :, i],
+            image[:, :, i]
         )
     return image
 
-
-def display_instances(image, boxes, masks, ids, names, scores):
+def display_instances(image, boxes, masks, ids, names, scores, bg_option,vbg=None):
     """
         take the image and results and apply the mask, box, and Label
     """
     n_instances = boxes.shape[0]
-
+    max_bbox_size = 0
     if not n_instances:
         print('NO INSTANCES TO DISPLAY')
     else:
@@ -84,44 +95,20 @@ def display_instances(image, boxes, masks, ids, names, scores):
     for i in range(n_instances):
         if not np.any(boxes[i]):
             continue
-
-        y1, x1, y2, x2 = boxes[i]
-        label = names[ids[i]]
-        color = class_dict[label]
-        score = scores[i] if scores is not None else None
-        caption = '{} {:.2f}'.format(label, score) if score else label
-        mask = masks[:, :, i]
-
-        image = apply_mask(image, mask, color)
-        image = cv2.rectangle(image, (x1, y1), (x2, y2), color, 2)
-        image = cv2.putText(
-            image, caption, (x1, y1), cv2.FONT_HERSHEY_COMPLEX, 0.7, color, 2
-        )
+        y1, x1, y2, x2 = boxes[i] #extract coordinates of box
+        bbox_area = (y2-y1) * (x2-x1)
+        label = names[ids[i]] #get class name from id
+        print(label)
+        if label =='person':
+            if bbox_area > max_bbox_size:
+                max_bbox_size = bbox_area
+                mask = masks[:, :, i]
+            else:
+                continue 
+        else:
+            continue
+        image = apply_mask(image, mask,bg_option,vbg)
 
     return image
 
 
-if __name__ == '__main__':
-    """
-        test everything
-    """
-
-    capture = cv2.VideoCapture(0)
-
-    # these 2 lines can be removed if you dont have a 1080p camera.
-    capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-    capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
-
-    while True:
-        ret, frame = capture.read()
-        results = model.detect([frame], verbose=0)
-        r = results[0]
-        frame = display_instances(
-            frame, r['rois'], r['masks'], r['class_ids'], class_names, r['scores']
-        )
-        cv2.imshow('frame', frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-
-    capture.release()
-    cv2.destroyAllWindows()

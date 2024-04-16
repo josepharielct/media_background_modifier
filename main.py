@@ -4,33 +4,34 @@ import cv2
 
 def main():
     #Read input
-    input_media_path = "input/1.jpg"
-    input_media_name, input_media_extension = get_media_info(input_media_path)
-    print(input_media_extension)
-    media = read_media(input_media_path)
-
+    input_media_path = "input/messi.jpg" #input
+    mode = 'blue' #input ;  select from ['blue','green','gray', 'external']
+    vbg = read_media('virtual_background/vbg_vertical.jpg') #input
     output_frames = []
-    #Isolate Media
-    ## get three modes: greyscale, green, blue
-   # mode = input("Choose isolation mode: greyscale, green, blue")
-   # if mode == 'green':
-    print(is_video(input_media_path))
+
+    input_media_name, input_media_extension = get_media_info(input_media_path)
+    media = read_media(input_media_path)
+    frame_counter = 0    
     if is_video(input_media_path):
+        print(f"Number of frame: {len(media)}")
         for frame in media:
-            results = model.detect([frame], verbose=1)
+            print(f"Frame: {frame_counter}")
+            results = model.detect([frame], verbose=0)
             # Visualize results
             r = results[0]
             masked_image = display_instances(frame, r['rois'], r['masks'], r['class_ids'], 
-                                    class_names, r['scores'])
-            cv2.imshow("masked_image",masked_image)
+                                    class_names, r['scores'],mode,vbg)
+            cv2.putText(masked_image, f"Frame: {frame_counter}", (10,50), cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2) 
             output_frames.append(masked_image)
-            save_media(output_frames, f"output/{input_media_name}",input_media_extension)
+            frame_counter += 1
+        save_media(output_frames, f"output/{input_media_name}")
     else:
         results = model.detect([media], verbose=1)
         r = results[0]
         masked_image = display_instances(media, r['rois'], r['masks'], r['class_ids'], 
-                                    class_names, r['scores'])
-        print('reached_here')
+                                    class_names, r['scores'],mode,vbg)
         save_media(masked_image, f"output/{input_media_name}")
-        print('saved_successfully')
+
+
+
 main()

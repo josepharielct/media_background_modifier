@@ -1,8 +1,7 @@
 import mimetypes
 import cv2
-from PIL import Image
-import skimage.io
 import numpy as np
+import sys
 def is_video(file_path):
     mime_type, _ = mimetypes.guess_type(file_path)
     if mime_type is not None:
@@ -27,30 +26,20 @@ def read_media(file_path):
             capture.release()
             return frames
         elif mime_type.startswith('image/'):
-            # Read image
-            image = skimage.io.imread(file_path)
+            image = cv2.imread(file_path)
             return image
+        else:
+            print('Unsupported output format')
+            sys.exit()
 
 def save_media(output_frame, output_path):
     if isinstance(output_frame, list):
-        # Handle video frames
         save_video(output_frame, output_path)
     elif isinstance(output_frame, np.ndarray):
-        print('reached image save_media')
-        # Handle image
         save_image(output_frame, output_path)
     else:
         print('Unsupported output format')
 
-def save_media(output_frame, output_path):
-    if isinstance(output_frame, list):
-        # Handle video frames
-        output_frame(output_frame, output_path)
-    elif isinstance(output_frame, np.ndarray):
-        # Handle image
-        save_image(output_frame, output_path)
-    else:
-        print('Unsupported output format')
 
 def save_video(output_frame,output_path):
         fourcc = cv2.VideoWriter_fourcc(*'avc1')
@@ -62,6 +51,6 @@ def save_video(output_frame,output_path):
 
 def save_image(image, output_path):
     output_path = f"{output_path}.png"
-    skimage.io.imsave(output_path, image)
+    cv2.imwrite(output_path, image)
     print(f'Image saved to {output_path}')
 
