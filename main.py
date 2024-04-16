@@ -7,10 +7,11 @@ def main():
     input_media_path = "input/messi.jpg" #input
     mode = 'blue' #input ;  select from ['blue','green','gray', 'external']
     vbg = read_media('virtual_background/vbg_vertical.jpg') #input
+    
     output_frames = []
-
-    input_media_name, input_media_extension = get_media_info(input_media_path)
     media = read_media(input_media_path)
+    input_media_name, input_media_extension = get_media_info(input_media_path)
+
     frame_counter = 0    
     if is_video(input_media_path):
         print(f"Number of frame: {len(media)}")
